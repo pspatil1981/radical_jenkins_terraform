@@ -1,0 +1,70 @@
+
+Terraform sample code to deploy resources:
+============================================
+Resource.tf
+provider "aws" {
+    region = var.aws_region
+	}
+
+#argument ke value ka datatype
+resource "aws_instance" "myinstance" {
+  ami           = var.instance_ami
+  instance_type = var.instance_type
+  count         = var.instance_count
+
+  tags = {
+    Name = "Prod-Server"
+  }
+
+}
+
+resource "aws_s3_bucket" "example" {
+  bucket = "my-test-bucket-1a456b"
+}
+
+resource "aws_s3_bucket" "example1" {
+  bucket = "mytest-bucket-12a456b"
+}
+
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
+	
+===============================================
+variable.tf
+#argument ke value ka datatype declare karte hai
+variable "aws_region" {
+  type = string
+}
+
+variable "instance_ami" {
+  type = string
+}
+
+variable "instance_type" {
+  type = string
+}
+
+variable "instance_count" {
+  type = number
+}
+
+===============================================
+terraform.tfvars
+#resource ke argument ka actual value
+aws_region  = "ap-south-1"
+instance_ami           = "ami-0327f51db613d7bd2"
+instance_type = "t2.micro"
+instance_count        = "4"
+
+============================================
+output.tf
+output "instance_public_ip_addr" {
+    value = aws_instance.myinstance[*].public_ip
+}
+
+
+output "instance_private_ip_addr" {
+    value = aws_instance.myinstance[*].private_ip
+}
+====================================================
